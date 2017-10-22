@@ -6,6 +6,9 @@ from flask import Flask, g
 
 from .db import init_db
 
+USAGE = '''flup is a simple pastebin: you upload a file and get a URL to
+it (the file) as a response.
+'''
 
 def create_app(config=None):
     '''
@@ -23,6 +26,7 @@ def create_app(config=None):
 
     register_cli(app)
     register_teardowns(app)
+    register_routes(app)
 
     return app
 
@@ -48,3 +52,9 @@ def register_teardowns(app):
 
         if hasattr(g, 'sqlite_db'):
             g.sqlite_db.close()
+
+
+def register_routes(app):
+    @app.route('/')
+    def index():
+        return USAGE
