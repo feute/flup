@@ -4,7 +4,7 @@ import os
 import tempfile
 import pytest
 
-from flup.flup import create_app
+from flup.flup import create_app, USAGE
 from flup.db import init_db
 
 
@@ -35,3 +35,12 @@ def client(request, app):
     request.addfinalizer(teardown)
 
     return client
+
+
+def test_print_usage_on_root(client):
+    '''
+    Print the usage string on GET /
+    '''
+
+    rv = client.get('/')
+    assert USAGE.encode() == rv.data
