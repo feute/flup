@@ -2,7 +2,7 @@
 
 import os
 
-from flask import Flask, g
+from flask import Flask, g, request
 
 from .db import init_db
 
@@ -55,6 +55,19 @@ def register_teardowns(app):
 
 
 def register_routes(app):
-    @app.route('/')
+    @app.route('/', methods=['GET', 'POST'])
     def index():
+        if request.method == 'POST':
+            data = request.files.get('f')
+
+            if not data:
+                return ('no file provided\n', 400)
+
+            try:
+                app.logger.debug(data.read().decode()[:40] + '...')
+            except:
+                app.logger.debug('Couldn\'t decode file, probably a binary')
+                return ('not ok\n', 400)
+
+            return ('ok\n', 201)
         return USAGE
