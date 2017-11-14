@@ -6,8 +6,20 @@ from flask import Flask, g, request
 
 from .db import init_db
 
-USAGE = '''flup is a simple pastebin: you upload a file and get a URL to
-it (the file) as a response.
+USAGE = '''flup is a simple pastebin: you upload a file and get a URL to it
+(the file) as a response.
+
+the file must be uploaded with POST request to /, attaching the file to
+a form field named 'f', and using the content-type multipart/form-data.
+
+uploading a file with curl:
+    $ curl -F 'f=@file.txt' localhost:5000
+
+uploading a file with httpie:
+    $ http -f localhost:5000 f@file.txt
+
+uploading from stdin with curl:
+    $ cat file.txt | curl -F 'f=@-' localhost:5000
 '''
 
 def create_app(config=None):
