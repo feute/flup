@@ -31,7 +31,7 @@ def create_app(config=None):
     app = Flask(__name__)
 
     app.config.update(dict(
-        DATABASE=os.path.join(app.root_path, 'flurl.db'),
+        DATABASE=os.path.join(app.root_path, 'flup.db'),
     ))
     app.config.update(config or {})
     app.config.from_envvar('FLUP_SETTINGS', silent=True)
