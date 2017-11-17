@@ -1,4 +1,4 @@
-'''Main Flask application file.'''
+"""Main Flask application file."""
 
 import os
 
@@ -6,7 +6,7 @@ from flask import Flask, g, request
 
 from .db import init_db
 
-USAGE = '''flup is a simple pastebin: you upload a file and get a URL to it
+USAGE = """flup is a simple pastebin: you upload a file and get a URL to it
 (the file) as a response.
 
 the file must be uploaded with POST request to /, attaching the file to
@@ -20,14 +20,17 @@ uploading a file with httpie:
 
 uploading from stdin with curl:
     $ cat file.txt | curl -F 'f=@-' localhost:5000
-'''
+"""
+
 
 def create_app(config=None):
-    '''
-    Application factory to create applications with multiple
-    configuration options
-    '''
+    """Create a Flask application with optional configuration options.
 
+    config must be a dictionary containing the values that will be
+    updated in the application.
+
+    Return a Flask application with default configurations.
+    """
     app = Flask(__name__)
 
     app.config.update(dict(
@@ -46,11 +49,11 @@ def create_app(config=None):
 def register_cli(app):
     @app.cli.command('initdb')
     def initdb_command():
-        '''
-        Initialise the database via command line, usage:
-            $ flask initdb
-        '''
+        """Initialise the database via command line.
 
+        Usage:
+            $ flask initdb
+        """
         init_db()
         print('Initialised the database.')
 
@@ -58,10 +61,7 @@ def register_cli(app):
 def register_teardowns(app):
     @app.teardown_appcontext
     def close_db(error):
-        '''
-        Closes the database connection at the end of the request.
-        '''
-
+        """Close the database connection at the end of the request."""
         if hasattr(g, 'sqlite_db'):
             g.sqlite_db.close()
 
@@ -78,7 +78,7 @@ def register_routes(app):
             try:
                 app.logger.debug(data.read().decode()[:40] + '...')
             except:
-                app.logger.debug('Couldn\'t decode file, probably a binary')
+                app.logger.debug("Couldn't decode file, probably a binary")
                 return ('not ok\n', 400)
 
             return ('ok\n', 201)

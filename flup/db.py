@@ -1,4 +1,4 @@
-'''Database configuration file. SQLite is used for simplicity.'''
+"""Database configuration file."""
 
 import sqlite3
 
@@ -6,48 +6,50 @@ from flask import g, current_app
 
 
 def connect_db():
-    '''
-    Connects to the database specified in the config of the current
-    application.
-    '''
+    """Connect to the database of the current application.
 
+    The database connection string (in this case, the filename of the
+    database) is taken from the value of the DATABASE key defined in
+    the configuration of the current application.
+
+    Return the database connection object.
+    """
     rv = sqlite3.connect(current_app.config['DATABASE'])
     rv.row_factory = sqlite3.Row
     return rv
 
 
 def get_db():
-    '''
-    Opens a new connection to the database if there is none yet for
-    the current application context.
-    '''
+    """Open a new connection to the database.
 
+    If there is no connection open (which is determine by retrieving
+    the connection from a global object), then open a new connection
+    and save it for further use.
+
+    Return the database connection object.
+    """
     if not hasattr(g, 'sqlite_db'):
         g.sqlite_db = connect_db()
 
     return g.sqlite_db
 
 
-def init_db():
-    '''
-    Initialises the database by reading the schema file.
-    '''
-
+def init_db(filename='schema.sql'):
+    """Initialise the database by reading the schema file."""
     db = get_db()
 
-    with current_app.open_resource('schema.sql', mode='r') as f:
+    with current_app.open_resource(filename, mode='r') as f:
         db.cursor().executescript(f.read())
 
     db.commit()
 
 
 def query_db(query, args=(), one=False):
-    '''
-    Queries the database of the current app with the optional argument
-    `args`, which will be passed to the query itself. Returns one result
-    if the argument `one` is true.
-    '''
+    """Query the database of the current application.
 
+    Return the first row of the result if the optional argument 'one'
+    is true, or the whole query result if not specified.
+    """
     cur = get_db().execute(query, args)
     rv = cur.fetchall()
     cur.close()
