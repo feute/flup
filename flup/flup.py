@@ -80,7 +80,7 @@ def register_routes(app):
 
             try:
                 app.logger.debug(data.read().decode()[:40] + '...')
-            except:
+            except UnicodeDecodeError:
                 app.logger.debug("Couldn't decode file, probably a binary")
                 return ('not ok\n', 400)
 
