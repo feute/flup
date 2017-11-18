@@ -6,11 +6,17 @@ from flask import Flask, g, request
 
 from .db import init_db, save_data, query_db
 
-USAGE = """flup is a simple pastebin: you upload a file and get a URL to it
-(the file) as a response.
+USAGE = """flup is a simple pastebin: you upload a file and get an identifier
+as a response.
 
-the file must be uploaded with POST request to /, attaching the file to
+the identifier is later used to retrieve your data, with the format:
+GET /<identifier>
+
+the file must be uploaded with a POST request to /, attaching the file to
 a form field named 'f', and using the content-type multipart/form-data.
+
+when you upload a file, you get a the identifier to your data as a
+response; you should save this to later retrieve your data.
 
 uploading a file with curl:
     $ curl -F 'f=@file.txt' localhost:5000
@@ -20,6 +26,17 @@ uploading a file with httpie:
 
 uploading from stdin with curl:
     $ cat file.txt | curl -F 'f=@-' localhost:5000
+
+retrieving a file with curl:
+    $ curl localhost:5000/<identifier>
+
+retrieving a file with httpie:
+    $ http :5000/<identifier>
+
+say you get an identifier 'abc-123' as a response when you upload your
+file:
+    $ curl localhost:5000/abc-123
+    $ http :5000/abc-123
 """
 
 
