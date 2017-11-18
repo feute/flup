@@ -47,6 +47,7 @@ def create_app(config=None):
 
 
 def register_cli(app):
+    """Register commands to a Flask application."""
     @app.cli.command('initdb')
     def initdb_command():
         """Initialise the database via command line.
@@ -59,6 +60,7 @@ def register_cli(app):
 
 
 def register_teardowns(app):
+    """Register tear-down functions to a Flask application."""
     @app.teardown_appcontext
     def close_db(error):
         """Close the database connection at the end of the request."""
@@ -67,6 +69,7 @@ def register_teardowns(app):
 
 
 def register_routes(app):
+    """Register routes to a Flask application."""
     @app.route('/', methods=['GET', 'POST'])
     def index():
         if request.method == 'POST':
