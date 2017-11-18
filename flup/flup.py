@@ -4,7 +4,7 @@ import os
 
 from flask import Flask, g, request
 
-from .db import init_db
+from .db import init_db, save_data
 
 USAGE = """flup is a simple pastebin: you upload a file and get a URL to it
 (the file) as a response.
@@ -78,11 +78,13 @@ def register_routes(app):
             if not data:
                 return ('no file provided\n', 400)
 
-            try:
-                app.logger.debug(data.read().decode()[:40] + '...')
-            except UnicodeDecodeError:
-                app.logger.debug("Couldn't decode file, probably a binary")
-                return ('not ok\n', 400)
+            identifier = save_data(data.read())
+            if identifier is None:
+                return ('could not upload the file\n', 400)
 
-            return ('ok\n', 201)
+            return (identifier + '\n', 201)
         return USAGE
+
+    @app.route('/<identifier>')
+    def get_data(identifier):
+        pass

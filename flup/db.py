@@ -1,6 +1,7 @@
 """Database configuration file."""
 
 import sqlite3
+from secrets import token_urlsafe
 
 from flask import g, current_app
 
@@ -55,3 +56,30 @@ def query_db(query, args=(), one=False):
     cur.close()
 
     return (rv[0] if rv else None) if one else rv
+
+
+def save_data(content):
+    """Save text data to the database.
+
+    The data is UTF-8 decoded before it is saved to the database.
+
+    A random URL-safe name is generated to identify the data.  This
+    identifier is meant to be used by users to retrieve the data that
+    they uploaded.
+
+    Return the identifier for the data.
+    """
+    try:
+        content = content.decode()
+    except UnicodeDecodeError:
+        return None
+
+    # Use a URL length of 4 bytes.
+    name = token_urlsafe(4)
+    db = get_db()
+
+    db.execute('insert into bins (name, content) values (?, ?)',
+               [name, content])
+    db.commit()
+
+    return name
