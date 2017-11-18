@@ -43,11 +43,13 @@ def assert_text_plain_response(response):
 
 
 def post_valid_file(client):
+    """Submit valid data with POST to /"""
     rv = client.post('/', data={'f': (BytesIO(b'test'), 'test.txt')})
     return rv
 
 
 def post_invalid_file(client):
+    """Submit invalid data with POST to /"""
     rv = client.post('/', data={'f': (BytesIO(b'\x80'), 'test.txt')})
     return rv
 
