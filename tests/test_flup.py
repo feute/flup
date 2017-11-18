@@ -5,7 +5,7 @@ import tempfile
 import pytest
 
 from flup.flup import create_app, USAGE
-from flup.db import init_db
+from flup.db import init_db, query_db
 from io import BytesIO
 
 
@@ -79,3 +79,33 @@ def test_bad_request_on_post_invalid_file(client):
     rv = post_invalid_file(client)
     assert_text_plain_response(rv)
     assert rv.status_code == 400
+
+
+def test_presence_of_valid_data_after_submit(client):
+    """Assert the presence of valid data in the database after posting."""
+    rv = post_valid_file(client)
+    data = query_db('select * from bins')
+    assert data
+
+
+def test_absence_of_invalid_data_after_submit(client):
+    """Assert the absence of invalid data in the database."""
+    rv = post_invalid_file(client)
+    data = query_db('select * from bins')
+    assert not data
+
+
+def test_get_by_identifier_returns_correct_data(client):
+    """GET a previously uploaded file returns the correct data.
+
+    The assertion should be made against the database data.
+    """
+    identifier = post_valid_file(client)
+    identifier = identifier.data.decode().strip()
+    data = query_db("select * from bins where name=?", [identifier],
+                    one=True)
+    rv = client.get('/' + identifier)
+
+    assert data
+    assert data['name'] == identifier
+    assert data['content'] == rv.data.decode()
