@@ -4,7 +4,7 @@ import os
 
 from flask import Flask, g, request
 
-from .db import init_db, save_data
+from .db import init_db, save_data, query_db
 
 USAGE = """flup is a simple pastebin: you upload a file and get a URL to it
 (the file) as a response.
@@ -87,4 +87,9 @@ def register_routes(app):
 
     @app.route('/<identifier>')
     def get_data(identifier):
-        pass
+        data = query_db("select content from bins where name=?",
+                        [identifier], one=True)
+        if not data:
+            return ('could not retrieve your file, sorry\n', 404)
+
+        return data[0]
