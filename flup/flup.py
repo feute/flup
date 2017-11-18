@@ -18,6 +18,10 @@ a form field named 'f', and using the content-type multipart/form-data.
 when you upload a file, you get a the identifier to your data as a
 response; you should save this to later retrieve your data.
 
+printing this help message:
+    $ curl localhost:5000
+    $ http localhost:5000
+
 uploading a file with curl:
     $ curl -F 'f=@file.txt' localhost:5000
 
@@ -31,12 +35,12 @@ retrieving a file with curl:
     $ curl localhost:5000/<identifier>
 
 retrieving a file with httpie:
-    $ http :5000/<identifier>
+    $ http localhost:5000/<identifier>
 
 say you get an identifier 'abc-123' as a response when you upload your
 file:
     $ curl localhost:5000/abc-123
-    $ http :5000/abc-123
+    $ http localhost:5000/abc-123
 """
 
 
