@@ -38,9 +38,14 @@ def client(request, app):
     return client
 
 
+def assert_text_plain_response(response):
+    assert response.mimetype == 'text/plain'
+
+
 def test_print_usage_on_root(client):
     """Print the usage string on GET /"""
     rv = client.get('/')
+    assert_text_plain_response(rv)
     assert USAGE.encode() == rv.data
 
 
@@ -49,6 +54,7 @@ def test_success_on_post_valid_file(client):
     POST request to /
     """
     rv = client.post('/', data={'f': (BytesIO(b'test'), 'test.txt')})
+    assert_text_plain_response(rv)
     assert rv.status_code == 201
 
 
@@ -60,4 +66,5 @@ def test_bad_request_on_post_invalid_file(client):
     UTF-8 decoded.
     """
     rv = client.post('/', data={'f': (BytesIO(b'\x80'), 'test.txt')})
+    assert_text_plain_response(rv)
     assert rv.status_code == 400
