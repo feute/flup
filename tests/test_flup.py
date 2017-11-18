@@ -42,6 +42,16 @@ def assert_text_plain_response(response):
     assert response.mimetype == 'text/plain'
 
 
+def post_valid_file(client):
+    rv = client.post('/', data={'f': (BytesIO(b'test'), 'test.txt')})
+    return rv
+
+
+def post_invalid_file(client):
+    rv = client.post('/', data={'f': (BytesIO(b'\x80'), 'test.txt')})
+    return rv
+
+
 def test_print_usage_on_root(client):
     """Print the usage string on GET /"""
     rv = client.get('/')
@@ -53,8 +63,7 @@ def test_success_on_post_valid_file(client):
     """Get 201 CREATED status code when submitting a valid
     POST request to /
     """
-    rv = client.post('/', data={'f': (BytesIO(b'test'), 'test.txt')})
-    assert_text_plain_response(rv)
+    rv = post_valid_file(client)
     assert rv.status_code == 201
 
 
@@ -65,6 +74,6 @@ def test_bad_request_on_post_invalid_file(client):
     An invalid request in this case means a file that cannot be
     UTF-8 decoded.
     """
-    rv = client.post('/', data={'f': (BytesIO(b'\x80'), 'test.txt')})
+    rv = post_invalid_file(client)
     assert_text_plain_response(rv)
     assert rv.status_code == 400
