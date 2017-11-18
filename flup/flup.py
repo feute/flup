@@ -59,12 +59,18 @@ def create_app(config=None):
     ))
     app.config.update(config or {})
     app.config.from_envvar('FLUP_SETTINGS', silent=True)
+    app.after_request(text_response)
 
     register_cli(app)
     register_teardowns(app)
     register_routes(app)
 
     return app
+
+
+def text_response(response):
+    response.mimetype = 'text/plain'
+    return response
 
 
 def register_cli(app):
