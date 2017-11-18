@@ -1,4 +1,4 @@
-'''Tests the Flup application.'''
+"""Tests the Flup application."""
 
 import os
 import tempfile
@@ -39,32 +39,25 @@ def client(request, app):
 
 
 def test_print_usage_on_root(client):
-    '''
-    Print the usage string on GET /
-    '''
-
+    """Print the usage string on GET /"""
     rv = client.get('/')
     assert USAGE.encode() == rv.data
 
 
 def test_success_on_post_valid_file(client):
-    '''
-    Get 201 CREATED status code when submitting a valid
+    """Get 201 CREATED status code when submitting a valid
     POST request to /
-    '''
-
+    """
     rv = client.post('/', data={'f': (BytesIO(b'test'), 'test.txt')})
     assert rv.status_code == 201
 
 
 def test_bad_request_on_post_invalid_file(client):
-    '''
-    Get 400 BAD REQUEST status code when submitting an invalid
+    """Get 400 BAD REQUEST status code when submitting an invalid
     POST request to /
 
     An invalid request in this case means a file that cannot be
     UTF-8 decoded.
-    '''
-
+    """
     rv = client.post('/', data={'f': (BytesIO(b'\x80'), 'test.txt')})
     assert rv.status_code == 400
